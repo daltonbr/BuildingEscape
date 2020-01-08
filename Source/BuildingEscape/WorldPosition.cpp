@@ -1,6 +1,7 @@
 // Copyright Dalton Lima 2020
 
 #include "WorldPosition.h"
+#include "GameFramework/Actor.h"
 #include "Engine/Engine.h"
 
 #define PRINT(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green,text)
@@ -15,25 +16,20 @@ UWorldPosition::UWorldPosition()
 	// ...
 }
 
-
-// Called when the game starts
 void UWorldPosition::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Display, TEXT("[WorldPosition] Demo Display"));
-	UE_LOG(LogTemp, Warning, TEXT("[WorldPosition] Demo Warning"));
-	UE_LOG(LogTemp, Error, TEXT("[WorldPosition] Demo Error"));
-	// ...
-	PRINT("hello macro!");
-	
+
+	const auto Owner = UActorComponent::GetOwner();
+	const auto Name = Owner->GetName();
+	auto WorldPosition = Owner->GetTransform().GetLocation();
+
+	UE_LOG(LogTemp, Warning, TEXT("[WorldPosition] %s @ %s"), *Name, *WorldPosition.ToCompactString());
 }
 
-
-// Called every frame
 void UWorldPosition::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
-
