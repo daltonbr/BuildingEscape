@@ -24,8 +24,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	float TargetYaw = 90.f;
-	float OpenDuration = 2.f;
-	FRotator ClosedRotation;
-	FRotator OpenRotation;
+	float LerpDuration = 2.f;	
+	const float DeltaYawToOpen = 90.f;
+	FRotator InitialRotation;
+	FRotator TargetRotation;
 };
