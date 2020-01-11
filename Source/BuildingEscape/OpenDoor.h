@@ -16,14 +16,16 @@ public:
 	// Sets default values for this component's properties
 	UOpenDoor();
 
-protected:
-	// Called when the game starts
+protected:	
 	virtual void BeginPlay() override;
     void OpenDoor() const;
 
-public:	
-	// Called every frame
+public:		
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+private:
+	float TargetYaw = 90.f;
+	float OpenDuration = 2.f;
+	FRotator ClosedRotation;
+	FRotator OpenRotation;
 };

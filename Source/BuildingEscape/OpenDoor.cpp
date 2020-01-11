@@ -17,24 +17,25 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("[OpenDoor] BeginPlay @ %s"), *GetOwner()->GetName());
-		//UE_LOG(LogTemp, Warning, TEXT("[WorldPosition] %s @ %s"), *Name, *WorldPosition.ToCompactString());
+	UE_LOG(LogTemp, Warning, TEXT("[OpenDoor] BeginPlay @ %s - TargetYaw: %f"), *GetOwner()->GetName(), TargetYaw);
 
-	OpenDoor();
+	ClosedRotation = GetOwner()->GetActorRotation();
+	OpenRotation = ClosedRotation;
+	OpenRotation.Add(0.f, 90.f, 0.f);
+	//OpenDoor();
 }
 
 void UOpenDoor::OpenDoor() const
 {
-	float Angle = 90.f;
-	FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	CurrentRotation.Yaw = Angle;
-	GetOwner()->SetActorRotation(CurrentRotation);	
+	
 }
 
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	FRotator CurrentRotation = GetOwner()->GetActorRotation();
+	CurrentRotation = FMath::Lerp(CurrentRotation, OpenRotation, 0.02f);
 
-	// ...
+	GetOwner()->SetActorRotation(CurrentRotation);
 }
 
