@@ -34,7 +34,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	CurrentRotation = FMath::Lerp(CurrentRotation, TargetRotation, 0.02f);
+	CurrentRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 1.f);
 
 	GetOwner()->SetActorRotation(CurrentRotation);	
 }

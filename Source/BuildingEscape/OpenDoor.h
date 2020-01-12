@@ -24,8 +24,13 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	float LerpDuration = 2.f;	
-	const float DeltaYawToOpen = 90.f;
+	UPROPERTY(EditAnywhere)
+	// Time used to lerp the door movement
+	float LerpDuration = 2.f;
+
+	UPROPERTY(EditAnywhere)
+	// Angle which the door will rotate when opening
+	float DeltaYawToOpen = 90.f;
 	FRotator InitialRotation;
 	FRotator TargetRotation;
 };
