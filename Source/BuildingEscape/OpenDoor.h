@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Curves/CurveFloat.h"
 #include "OpenDoor.generated.h"
 
 
@@ -18,19 +19,20 @@ public:
 
 protected:	
 	virtual void BeginPlay() override;
-    void OpenDoor() const;
 
 public:		
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	// Time used to lerp the door movement
-	float LerpDuration = 2.f;
+	UPROPERTY(EditInstanceOnly)
+	UCurveFloat* YawCurve;		
 
 	UPROPERTY(EditAnywhere)
-	// Angle which the door will rotate when opening
-	float DeltaYawToOpen = 90.f;
+	// Time used to extend the opening of the door
+	float OpeningDuration = 3.5f;
+
 	FRotator InitialRotation;
-	FRotator TargetRotation;
+
+	bool bIsOpen;
+	float ElapsedTime;
 };

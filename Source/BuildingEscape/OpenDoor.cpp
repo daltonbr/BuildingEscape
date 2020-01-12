@@ -1,8 +1,15 @@
 // Copyright Dalton Lima 2020
 
-
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
+
+#define GAMENAME_DEBUG 1
+
+#if GAMENAME_DEBUG
+    #define GAMENAME_CHECK(expr) { if(!(expr)) FDebug::AssertFailed( #expr, __FILE__, __LINE__ ); CA_ASSUME(expr); }
+#else
+    #define GAMENAME_CHECK(expr)
+#endif
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
@@ -17,25 +24,42 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GAMENAME_CHECK(YawCurve);
+
 	UE_LOG(LogTemp, Warning, TEXT("[OpenDoor] BeginPlay @ %s"), *GetOwner()->GetName());
 
 	InitialRotation = GetOwner()->GetActorRotation();
-	TargetRotation = InitialRotation;
-	TargetRotation.Add(0.f, DeltaYawToOpen, 0.f);	
-}
+	//TargetRotation = InitialRotation;
+	//TargetRotation.Add(0.f, DeltaYawToOpen, 0.f);
 
-void UOpenDoor::OpenDoor() const
-{
-	
+	ElapsedTime = 0;
+	bIsOpen = false;
 }
 
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
 
-	FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	CurrentRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 1.f);
+	if (bIsOpen)
+	{
+		return;
+	}
 
-	GetOwner()->SetActorRotation(CurrentRotation);	
+	if (ElapsedTime > OpeningDuration)
+	{
+		bIsOpen = true;
+		ElapsedTime = 0.f;
+		return;
+	}
+
+	ElapsedTime += DeltaTime;
+	   	
+	FRotator CurrentRotation = GetOwner()->GetActorRotation();	
+
+	GAMENAME_CHECK(YawCurve);
+
+	auto CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
+	CurrentRotation.Yaw = InitialRotation.Yaw + CurrentYaw;
+	GetOwner()->SetActorRelativeRotation(CurrentRotation);
 }
-
