@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Curves/CurveFloat.h"
+#include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
@@ -22,6 +22,7 @@ protected:
 
 public:		
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+    void OpenDoor(float DeltaTime);
 
 private:
 	UPROPERTY(EditInstanceOnly)
@@ -31,8 +32,15 @@ private:
 	// Time used to extend the opening of the door
 	float OpeningDuration = 3.5f;
 
+	UPROPERTY(EditAnywhere)
+	ATriggerVolume* PressurePlate;
+
+	//UPROPERTY(EditAnywhere)
+	AActor* ActorThatOpens;
+
 	FRotator InitialRotation;
 
 	bool bIsOpen;
 	float ElapsedTime;
+
 };
