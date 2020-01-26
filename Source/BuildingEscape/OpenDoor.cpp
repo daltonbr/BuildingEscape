@@ -58,8 +58,6 @@ void UOpenDoor::BeginPlay()
 
 	InitialRotation = GetOwner()->GetActorRotation();
 
-	//ActorThatOpen = GetPa
-
 	ElapsedTime = 0;
 	bIsOpen = false;
 }
@@ -68,23 +66,19 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
 
-	if (!bIsOpen)
-	{
-		ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 
-		if (PressurePlate && PressurePlate->IsOverlappingActor  (ActorThatOpens))
-		{
-		    OpenDoor(DeltaTime);
-		}
+	if (PressurePlate && !PressurePlate->IsOverlappingActor(ActorThatOpens))
+	{
+		CloseDoor(DeltaTime);
 	}
-
-	if (!bIsClosed)
+	else
 	{
-		ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
+		//ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 
-		if (PressurePlate && !PressurePlate->IsOverlappingActor(ActorThatOpens))
+		if (PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpens))
 		{
-			CloseDoor(DeltaTime);
+			OpenDoor(DeltaTime);
 		}
 	}
 
@@ -92,11 +86,12 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor(const float DeltaTime)
 {
-	bIsClosed = false;
 	if (ElapsedTime > OpeningDuration)
 	{
-		bIsOpen = true;
-		ElapsedTime = 0.f;
+		//bIsClosed = false;
+		//bIsOpen = true;
+		DoorLastOpened = GetWorld()->GetTimeSeconds();
+		//ElapsedTime = OpeningDuration;
 		return;
 	}
 
@@ -113,14 +108,19 @@ void UOpenDoor::OpenDoor(const float DeltaTime)
 
 void UOpenDoor::CloseDoor(const float DeltaTime)
 {
-	bIsOpen = false;
+	//bIsOpen = false;
+	if (DoorLastOpened + DoorCloseDelayInSeconds > GetWorld()->GetTimeSeconds())
+	{
+	    return;
+	}
+
 	GAMENAME_CHECK(YawCurve);
 
 	ElapsedTime -= DeltaTime;
 
 	if (ElapsedTime < 0)
 	{
-		bIsClosed = true;
+		//bIsClosed = true;
 		ElapsedTime = 0.f;
 	}
 

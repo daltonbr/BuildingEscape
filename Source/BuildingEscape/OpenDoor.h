@@ -33,6 +33,12 @@ private:
 	// Time used to extend the opening of the door
 	float OpeningDuration = 3.5f;
 
+ //    UPROPERTY(EditAnywhere)
+	// float ClosingDuration = 1.0f;
+
+    UPROPERTY(EditAnywhere)
+	float DoorCloseDelayInSeconds = 2.f;
+
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate;
 
@@ -44,5 +50,5 @@ private:
 	bool bIsOpen;
 	bool bIsClosed;
 	float ElapsedTime;
-
+	float DoorLastOpened = 0.f;
 };
