@@ -22,11 +22,12 @@ protected:
 
 public:		
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-    void OpenDoor(float DeltaTime);
+    void OpenDoor(const float DeltaTime);
+    void CloseDoor(const float DeltaTime);
 
 private:
 	UPROPERTY(EditInstanceOnly)
-	UCurveFloat* YawCurve;		
+	UCurveFloat* YawCurve;
 
 	UPROPERTY(EditAnywhere)
 	// Time used to extend the opening of the door
@@ -41,6 +42,7 @@ private:
 	FRotator InitialRotation;
 
 	bool bIsOpen;
+	bool bIsClosed;
 	float ElapsedTime;
 
 };

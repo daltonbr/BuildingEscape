@@ -68,23 +68,31 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
 
-	if (bIsOpen)
-	{
-		return;
-	}
-	else
+	if (!bIsOpen)
 	{
 		ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 
-	    if (PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpens))
-	    {
-			OpenDoor(DeltaTime);
-	    }
+		if (PressurePlate && PressurePlate->IsOverlappingActor  (ActorThatOpens))
+		{
+		    OpenDoor(DeltaTime);
+		}
 	}
+
+	if (!bIsClosed)
+	{
+		ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+		if (PressurePlate && !PressurePlate->IsOverlappingActor(ActorThatOpens))
+		{
+			CloseDoor(DeltaTime);
+		}
+	}
+
 }
 
-void UOpenDoor::OpenDoor(float DeltaTime)
+void UOpenDoor::OpenDoor(const float DeltaTime)
 {
+	bIsClosed = false;
 	if (ElapsedTime > OpeningDuration)
 	{
 		bIsOpen = true;
@@ -97,6 +105,26 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 	FRotator CurrentRotation = GetOwner()->GetActorRotation();
 
 	GAMENAME_CHECK(YawCurve);
+
+	auto CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
+	CurrentRotation.Yaw = InitialRotation.Yaw + CurrentYaw;
+	GetOwner()->SetActorRelativeRotation(CurrentRotation);
+}
+
+void UOpenDoor::CloseDoor(const float DeltaTime)
+{
+	bIsOpen = false;
+	GAMENAME_CHECK(YawCurve);
+
+	ElapsedTime -= DeltaTime;
+
+	if (ElapsedTime < 0)
+	{
+		bIsClosed = true;
+		ElapsedTime = 0.f;
+	}
+
+	FRotator CurrentRotation = GetOwner()->GetActorRotation();
 
 	auto CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
 	CurrentRotation.Yaw = InitialRotation.Yaw + CurrentYaw;
