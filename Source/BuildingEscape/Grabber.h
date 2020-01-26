@@ -27,5 +27,6 @@ public:
 private:
 	APlayerController* PlayerController;
 
-	float Reach = 200.f;
+	UPROPERTY(EditAnywhere)
+	float Reach = 100.f;
 };
