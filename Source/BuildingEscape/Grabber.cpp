@@ -20,7 +20,6 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty"));
 	PlayerController = GetWorld()->GetFirstPlayerController();
 
 	// Check for PhysicsHandleComponent
@@ -30,6 +29,18 @@ void UGrabber::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Cannot find UPhysicsHandleComponent attached to %s"), *GetOwner()->GetName());
 	}
+
+	// This component is always embedded
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+
+	if (InputComponent == nullptr)		
+	{
+		UE_LOG(LogTemp, Error, TEXT("InputComponent couldn't be found on %s"), *GetOwner()->GetName());
+	}
+
+	InputComponent->BindAction(GrabActionName, EInputEvent::IE_Pressed, this, &UGrabber::Grab);
+
+	InputComponent->BindAction(GrabActionName, EInputEvent::IE_Released, this, &UGrabber::Release);		
 }
 
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -76,12 +87,15 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		FString HitName = HitResult.GetActor()->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("We hit: %s"), *HitName);
 	}	
-
-	// FindComponentByClass()
-
-	// <> for generics
-	// nullptr to initialise pointers
-	// log a useful error if the component isn't attached, specifically a PhysicsHandle
-
+ 
 }
 
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab %s"), *GetOwner()->GetName());
+}
+
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Release %s"), *GetOwner()->GetName());
+}
