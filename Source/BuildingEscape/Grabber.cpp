@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "DrawDebugHelpers.h"
+//#include "CollisionQueryParams.h"
 
 #define OUT
 
@@ -13,12 +14,8 @@ UGrabber::UGrabber()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
-
-// Called when the game starts
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
@@ -40,12 +37,9 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		OUT PlayerViewPointRotation
 	);
 
-	//UE_LOG(LogTemp, Warning, TEXT("[Grabber] Location: %s Rotation: %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString()
- //   );
-
 	// Get the End Position
-	FVector LineTraceDirection = PlayerViewPointRotation.Vector();
-	FVector LineTraceEnd = PlayerViewPointLocation + (LineTraceDirection * Reach);
+	FVector const LineTraceDirection = PlayerViewPointRotation.Vector();
+	FVector const LineTraceEnd = PlayerViewPointLocation + (LineTraceDirection * Reach);
 
 	// Ray-cast out to a certain distance (Reach private member variable)
 	DrawDebugLine(GetWorld(),
@@ -54,10 +48,26 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		false, -1, 0, 4
 	);
 
-	// See what it hits
+	FHitResult HitResult;
+	FCollisionQueryParams TraceParams(
+		FName(TEXT("")),
+		false,
+		GetOwner()
+	);	
 
+    bool Hit = GetWorld()->LineTraceSingleByObjectType(
+		OUT HitResult,
+		PlayerViewPointLocation,
+		LineTraceEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParams
+	);
 
-	
-	// Use DrawDebugLine()
+	if (Hit)
+	{
+		FString HitName = HitResult.GetActor()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("We hit: %s"), *HitName);
+	}	
+
 }
 
