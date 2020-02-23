@@ -30,21 +30,59 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// If the physics handle is attached
+	if (PhysicsHandle->GrabbedComponent)
+	{
 	    // Move the object we are holding
+			// Get the players viewpoint
+		FVector PlayerViewPointLocation;
+		FRotator PlayerViewPointRotation;
+		//PlayerController->GetActorEyesViewPoint(location, rotation);
+		PlayerController->GetPlayerViewPoint(
+			OUT PlayerViewPointLocation,
+			OUT PlayerViewPointRotation
+		);
+
+		// Get the End Position
+		FVector const LineTraceDirection = PlayerViewPointRotation.Vector();
+		FVector const LineTraceEnd = PlayerViewPointLocation + (LineTraceDirection * Reach);
+
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+	}
 }
 
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Grabber] Grab Pressed"));
 
+	// Try and reach any actors with physics body collision channel set.
 	// only raycast when key is pressed. (maybe not if we want a different behaviour)
 	FHitResult hit = GetFirstPhysicsBodyInReach();
+	UPrimitiveComponent* ComponentToGrab = hit.GetComponent();
 
-	// Try and reach any actors with physics body collision channel set.
+	// Get the players viewpoint
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	//PlayerController->GetActorEyesViewPoint(location, rotation);
+	PlayerController->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation
+	);
 
-	// If we hit something then attach the physics handle.
+	// Get the End Position
+	FVector const LineTraceDirection = PlayerViewPointRotation.Vector();
+	FVector const LineTraceEnd = PlayerViewPointLocation + (LineTraceDirection * Reach);
 
-	//TODO: attach the physics handle
+    // If we hit something then attach the physics handle.
+	if (hit.GetActor())
+	{
+		// attach the physics handle
+		PhysicsHandle->GrabComponentAtLocation
+	        (
+			    ComponentToGrab,
+			    NAME_None,
+			    LineTraceEnd
+		    );
+	}
 
 }
 
@@ -52,7 +90,11 @@ void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Grabber] Grab Released"));
 
-    //TODO: remove/release the physics handle.
+    // Remove/release the physics handle.
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->ReleaseComponent();
+	}
 }
 
 void UGrabber::FindPhysicsHandle()
