@@ -29,7 +29,9 @@ private:
 
     FName GrabActionName = TEXT("Grab");
 
+	UPROPERTY()
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UPROPERTY()
 	UInputComponent* InputComponent = nullptr;
 
 	void Grab();

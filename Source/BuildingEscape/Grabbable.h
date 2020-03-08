@@ -26,5 +26,4 @@ public:
     FString ItemName;
 
     void PickedUp();
-    virtual void PickedUp2();
 };

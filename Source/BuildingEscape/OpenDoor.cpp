@@ -51,6 +51,16 @@ void UOpenDoor::BeginPlay()
 
 	ElapsedTime = 0;
 	bIsOpen = false;
+	FindAudioComponent();
+}
+
+void UOpenDoor::FindAudioComponent()
+{
+	AudioComponent = GetOwner()->FindComponentByClass<UAudioComponent>();
+	if (!AudioComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[OpenDoor] Missing AudioComponent! %s"), *GetOwner()->GetName());
+	}
 }
 
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -88,6 +98,14 @@ void UOpenDoor::OpenDoor(const float DeltaTime)
 	float CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
 	CurrentRotation.Yaw = InitialRotation.Yaw + CurrentYaw;
 	GetOwner()->SetActorRelativeRotation(CurrentRotation);
+
+	if (!AudioComponent) { return; }
+	if (!bOpenDoorSoundPlayed)
+	{
+		AudioComponent->Play();
+		bOpenDoorSoundPlayed = true;
+		bCloseDoorSoundPlayed = false;
+	}
 }
 
 void UOpenDoor::CloseDoor(const float DeltaTime)
@@ -113,6 +131,14 @@ void UOpenDoor::CloseDoor(const float DeltaTime)
 	float CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
 	CurrentRotation.Yaw = InitialRotation.Yaw + CurrentYaw;
 	GetOwner()->SetActorRelativeRotation(CurrentRotation);
+
+	if (!AudioComponent) { return; }
+	if (!bCloseDoorSoundPlayed)
+	{
+		AudioComponent->Play();
+		bCloseDoorSoundPlayed = true;
+		bOpenDoorSoundPlayed = false;
+	}
 }
 
 float UOpenDoor::TotalMassOfActors() const

@@ -24,8 +24,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual void PickedUp2() override;
-
 private:
 	UPROPERTY(EditAnywhere)
 	FString Name;

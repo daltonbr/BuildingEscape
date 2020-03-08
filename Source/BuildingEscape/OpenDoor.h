@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/AudioComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
@@ -25,7 +26,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditInstanceOnly)
+	void FindAudioComponent();
+
+    UPROPERTY(EditInstanceOnly)
 	UCurveFloat* YawCurve = nullptr;
 
 	UPROPERTY(EditAnywhere)
@@ -44,10 +47,16 @@ private:
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate = nullptr;
 
+	UPROPERTY()
+	UAudioComponent* AudioComponent = nullptr;
+
 	FRotator InitialRotation;
 
 	bool bIsOpen;
 	bool bIsClosed;
 	float ElapsedTime;
 	float DoorLastOpened = 0.f;
+
+	bool bOpenDoorSoundPlayed = false;
+	bool bCloseDoorSoundPlayed = true;
 };

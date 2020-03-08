@@ -3,6 +3,7 @@
 #include "Grabber.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "Components/AudioComponent.h"
 //#include "DrawDebugHelpers.h"
 //#include "CollisionQueryParams.h"
 

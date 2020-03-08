@@ -16,7 +16,6 @@ void UItem::BeginPlay()
 {
 	Super::BeginPlay();
 	PickedUp();
-	PickedUp2();
 }
 
 void UItem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -24,9 +23,4 @@ void UItem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentT
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-}
-
-void UItem::PickedUp2()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Item %s picked up"), *Name);
 }
