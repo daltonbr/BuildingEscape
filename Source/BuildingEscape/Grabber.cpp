@@ -29,12 +29,12 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// If the physics handle is attached
+	if (!PhysicsHandle) { return; }
 	if (PhysicsHandle->GrabbedComponent)
 	{
 	    // Move the object we are holding
 
-		FVector LineTraceEnd = GetPlayersReach();
+        const FVector LineTraceEnd = GetPlayersReach();
 		PhysicsHandle->SetTargetLocation(LineTraceEnd);
 	}
 }
@@ -44,9 +44,13 @@ void UGrabber::Grab()
 	// Try and reach any actors with physics body collision channel set.
 	FHitResult hit = GetFirstPhysicsBodyInReach();
 	UPrimitiveComponent* ComponentToGrab = hit.GetComponent();
+	AActor* ActorHit = hit.GetActor();
 
-	if (hit.GetActor())
+
+	if (ActorHit)
 	{
+		if (!PhysicsHandle) { return; }
+
 		PhysicsHandle->GrabComponentAtLocation
 	        (
 			    ComponentToGrab,
@@ -58,6 +62,7 @@ void UGrabber::Grab()
 
 void UGrabber::Release()
 {
+	if (!PhysicsHandle) { return; }
     PhysicsHandle->ReleaseComponent();
 }
 
@@ -65,7 +70,7 @@ void UGrabber::FindPhysicsHandle()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 
-	if (PhysicsHandle == nullptr)
+	if (!PhysicsHandle)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Cannot find UPhysicsHandleComponent attached to %s"), *GetOwner()->GetName());
 	}
@@ -76,7 +81,7 @@ void UGrabber::SetupInputComponent()
 	// This component is always embedded
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 
-	if (InputComponent == nullptr)
+	if (!InputComponent)
 	{
 		UE_LOG(LogTemp, Error, TEXT("InputComponent couldn't be found on %s"), *GetOwner()->GetName());
 	}

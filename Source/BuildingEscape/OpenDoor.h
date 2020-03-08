@@ -26,7 +26,7 @@ protected:
 
 private:
 	UPROPERTY(EditInstanceOnly)
-	UCurveFloat* YawCurve;
+	UCurveFloat* YawCurve = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	float MassToOpenDoor = 50.f;
@@ -42,10 +42,7 @@ private:
 	float DoorCloseDelayInSeconds = 2.f;
 
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume* PressurePlate;
-
-	//UPROPERTY(EditAnywhere)
-	AActor* ActorThatOpens;
+	ATriggerVolume* PressurePlate = nullptr;
 
 	FRotator InitialRotation;
 

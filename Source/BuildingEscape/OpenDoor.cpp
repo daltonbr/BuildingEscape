@@ -15,14 +15,11 @@
     #define GAMENAME_CHECK(expr)
 #endif
 
-// Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 void UOpenDoor::BeginPlay()
@@ -49,13 +46,6 @@ void UOpenDoor::BeginPlay()
     //UE_LOG(LogTemp, Warning, TEXT("[OpenDoor] BeginPlay @ %s"), *GetOwner()->GetName());
 
 	APawn* PawnController = GetWorld()->GetFirstPlayerController()->GetPawn();
-	//auto PlayerController = GetWorld()->GetFirstPlayerController();
-	ActorThatOpens = PawnController;
-
-	if (ActorThatOpens == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("[OpenDoor] Can't find ActorThatOpens in scene"));
-	}
 
 	InitialRotation = GetOwner()->GetActorRotation();
 
@@ -66,8 +56,6 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
-
-	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 
 	if (TotalMassOfActors() > MassToOpenDoor)
 	{
@@ -97,7 +85,7 @@ void UOpenDoor::OpenDoor(const float DeltaTime)
 
 	GAMENAME_CHECK(YawCurve);
 
-	auto CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
+	float CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
 	CurrentRotation.Yaw = InitialRotation.Yaw + CurrentYaw;
 	GetOwner()->SetActorRelativeRotation(CurrentRotation);
 }
@@ -122,7 +110,7 @@ void UOpenDoor::CloseDoor(const float DeltaTime)
 
 	FRotator CurrentRotation = GetOwner()->GetActorRotation();
 
-	auto CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
+	float CurrentYaw = YawCurve->GetFloatValue(ElapsedTime / OpeningDuration);
 	CurrentRotation.Yaw = InitialRotation.Yaw + CurrentYaw;
 	GetOwner()->SetActorRelativeRotation(CurrentRotation);
 }
@@ -132,11 +120,11 @@ float UOpenDoor::TotalMassOfActors() const
 	float TotalMass = 0.f;
 	TArray<AActor*> OverlappingActors;
 
+	if (!PressurePlate) { return TotalMass; }
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
 
 	for (AActor* OverlappingActor : OverlappingActors)
 	{
-		
 		TotalMass += OverlappingActor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("%f on pressure plate"), TotalMass)
