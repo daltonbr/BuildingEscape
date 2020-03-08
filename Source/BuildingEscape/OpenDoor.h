@@ -16,18 +16,20 @@ class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void OpenDoor(const float DeltaTime);
+	void CloseDoor(const float DeltaTime);
+	float TotalMassOfActors() const;
 
 protected:	
 	virtual void BeginPlay() override;
 
-public:		
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-    void OpenDoor(const float DeltaTime);
-    void CloseDoor(const float DeltaTime);
-
 private:
 	UPROPERTY(EditInstanceOnly)
 	UCurveFloat* YawCurve;
+
+	UPROPERTY(EditAnywhere)
+	float MassToOpenDoor = 50.f;
 
 	UPROPERTY(EditAnywhere)
 	// Time used to extend the opening of the door
